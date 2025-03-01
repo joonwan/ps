@@ -1,14 +1,13 @@
 import java.io.*;
-import java.util.StringTokenizer;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class Main {
 
-    private static BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
+    private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
     public static void main(String[] args) throws IOException {
-        int tc = Integer.parseInt(bf.readLine());
+        int tc = Integer.parseInt(br.readLine());
 
         for (int i = 0; i < tc; i++) {
             sol();
@@ -16,39 +15,39 @@ public class Main {
     }
 
     private static void sol() throws IOException {
-        int count = Integer.parseInt(bf.readLine());
-        int result = 1;
-        List<Person> persons = new ArrayList<>();
+        int n = Integer.parseInt(br.readLine());
+        ArrayList<Node> ranks = new ArrayList<>();
 
-        for(int i = 0 ; i < count; i++) {
-            StringTokenizer st = new StringTokenizer(bf.readLine());
-            int score1 = Integer.parseInt(st.nextToken());
-            int score2 = Integer.parseInt(st.nextToken());
-            persons.add(new Person(score1, score2));
+        for (int i = 0; i < n; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            ranks.add(new Node(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken())));
         }
 
-        persons.sort((p1, p2) -> p1.score1 - p2.score1);
+        ranks.sort((ri1, ri2) -> ri1.r1 - ri2.r1);
 
-        int beforeTopRank = persons.get(0).score2;
+        int count = 1;
 
-        for(int i = 1; i < count; i++) {
-            Person now = persons.get(i);
-            if (beforeTopRank > now.score2) {
-                result++;
-                beforeTopRank = now.score2;
+        int max = ranks.get(0).r2;
+        for (int i = 1; i < n; i++) {
+            Node now = ranks.get(i);
+
+            if (now.r2 < max) {
+                count++;
+                max = now.r2;
             }
         }
 
-        System.out.println(result);
+        System.out.println(count);
     }
 
-    static class Person {
-        private int score1;
-        private int score2;
 
-        public Person(int score1, int score2) {
-            this.score1 = score1;
-            this.score2 = score2;
+    static class Node {
+        int r1;
+        int r2;
+
+        public Node(int r1, int r2) {
+            this.r1 = r1;
+            this.r2 = r2;
         }
 
     }
