@@ -1,98 +1,81 @@
 import java.io.*;
-import java.util.*;
 
 public class Main {
-    public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    private static int tc, n;
-    private static ArrayList<String> numbers;
+
+    private static final int MAX_NODE = 100_001;
+    private static final int MAX_NUMBER = 10;
+
+    private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    private static int tc, n, nodeCnt;
+    private static int[][] table = new int[MAX_NODE][MAX_NUMBER];
+    private static boolean[] isEnd = new boolean[MAX_NODE];
     private static StringBuilder sb = new StringBuilder();
     
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] agrs) throws IOException {
         tc = Integer.parseInt(br.readLine());
+        
+        // O(tc * n * m)
         for (int i = 0; i < tc; i++) {
-            if (!sol()) sb.append("NO\n");
-            else sb.append("YES\n");
+            sol();
         }
 
         System.out.print(sb);
     }
 
-    private static boolean sol() throws IOException {
-        init();
-        Trie trie = new Trie();
+    private static void sol() throws IOException {
 
-        for (String phoneNumber : numbers) {
-            if (trie.startsWith(phoneNumber)) return false;
-            trie.insert(phoneNumber);
+        init();
+        n = Integer.parseInt(br.readLine());
+        boolean isConsistent = true;
+
+        // O(n * m)
+        for (int i = 0; i < n; i++) {
+            String word = br.readLine();
+            
+            if (isConsistent) {
+                if (!insert(word)) {
+                    isConsistent = false;
+                }
+            }
         }
 
+        sb.append(isConsistent ? "YES\n" : "NO\n");
+    }
+
+    // O(m) m = length of word
+    private static boolean insert(String word) {
+        int curr = 0; // root node
+
+        for (int i = 0; i < word.length(); i++) {
+            int child = word.charAt(i) - '0';
+
+            if (table[curr][child] == 0) {
+                table[curr][child] = ++nodeCnt;
+            }
+
+            // move next node
+            curr = table[curr][child];
+
+            if (isEnd[curr]) return false;
+        }
+
+        for (int i = 0; i < MAX_NUMBER; i++) {
+            if (table[curr][i] != 0) return false;
+        }
+
+        // end of word
+        isEnd[curr] = true;
         return true;
     }
 
-    private static void init() throws IOException {
-        n = Integer.parseInt(br.readLine());
-        numbers = new ArrayList<>();
-
-        for (int i = 0; i < n; i++) {
-            numbers.add(br.readLine());
-        }
-
-        numbers.sort((s1, s2) -> s2.compareTo(s1));
-    }
-
-    static class Trie {
-        Node root;
-
-        public Trie() {
-            root = new Node();
-        }
-
-        public void insert(String word) {
-            Node node = root;
-
-            for (char c : word.toCharArray()) {
-                if (!node.containsKey(c)) node.put(c, new Node());
-                node = node.get(c);
+    private static void init() {
+        for (int i = 0; i <= nodeCnt; i++) {
+            for (int j = 0; j < MAX_NUMBER; j++) {
+                table[i][j] = 0;
             }
-
-            node.setEnd();
+            isEnd[i] = false;
         }
 
-        public boolean startsWith(String prefix) {
-            return searchPrefix(prefix) != null;
-        }
-
-        private Node searchPrefix(String prefix) {
-            Node node = root;
-
-            for (char c : prefix.toCharArray()) {
-                if (!node.containsKey(c)) return null;
-                node = node.get(c);
-            }
-
-            return node;
-        }
-    }
-
-    static class Node {
-        private HashMap<Character, Node> children = new HashMap<>();
-        private boolean isEndOfWord = false;
-
-        public boolean containsKey(char c) {
-            return children.containsKey(c);
-        }
-
-        public Node get(char c) {
-            return children.get(c);
-        }
-
-        public void put(char c, Node child) {
-            children.put(c, child);
-        }
-
-        public void setEnd() {
-            isEndOfWord = true;
-        }
-
+        nodeCnt = 0;
     }
 }
