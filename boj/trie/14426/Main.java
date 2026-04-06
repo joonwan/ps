@@ -1,6 +1,9 @@
 import java.io.*;
 import java.util.*;
 
+
+// trie
+
 public class Main {
 
     private static final int MAX_NODE = 10_000 * 500 + 5;
